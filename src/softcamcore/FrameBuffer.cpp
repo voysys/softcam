@@ -205,14 +205,14 @@ void FrameBuffer::transferToDIB(void* image_bits, uint64_t* out_frame_counter)
     {
         int w = frame->m_width;
         int h = frame->m_height;
-        int gap = ((w * 3 + 3) & ~3) - w * 3;
+        int gap = ((w * 4 + 4) & ~4) - w * 4;
         const std::uint8_t* image = frame->imageData();
         std::uint8_t* dest = (std::uint8_t*)image_bits;
         for (int y = 0; y < h; y++)
         {
-            const std::uint8_t* src = image + 3 * w * (h - 1 - y);
-            std::memcpy(dest, src, 3 * (uint32_t)w);
-            dest += 3 * w + gap;
+            const std::uint8_t* src = image + 4 * w * (h - 1 - y);
+            std::memcpy(dest, src, 4 * (uint32_t)w);
+            dest += 4 * w + gap;
         }
         *out_frame_counter = frame->m_frame_counter;
     }
