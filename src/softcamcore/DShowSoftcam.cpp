@@ -97,7 +97,7 @@ AM_MEDIA_TYPE* allocateMediaType()
 
 std::size_t calcDIBSize(int width, int height)
 {
-    std::size_t stride = (static_cast<unsigned>(width) * 3 + 3) & ~3u;
+    std::size_t stride = (static_cast<unsigned>(width) * 4 + 4) & ~4u;
     return stride * static_cast<unsigned>(height);
 }
 
