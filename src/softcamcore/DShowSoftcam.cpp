@@ -121,12 +121,12 @@ void fillMediaType(AM_MEDIA_TYPE* amt, int width, int height, float framerate)
     pFormat->bmiHeader.biWidth = width;
     pFormat->bmiHeader.biHeight = height;
     pFormat->bmiHeader.biPlanes = 1;
-    pFormat->bmiHeader.biBitCount = 24;
+    pFormat->bmiHeader.biBitCount = 32;
     pFormat->bmiHeader.biCompression = BI_RGB;
     pFormat->bmiHeader.biSizeImage = static_cast<uint32_t>(calcDIBSize(width, height));
 
     amt->majortype = MEDIATYPE_Video;
-    amt->subtype = MEDIASUBTYPE_RGB24;
+    amt->subtype = MEDIASUBTYPE_RGB32;
     amt->bFixedSizeSamples = TRUE;
     amt->bTemporalCompression = FALSE;
     amt->lSampleSize = static_cast<uint32_t>(calcDIBSize(width, height));
@@ -207,7 +207,7 @@ Softcam::SetFormat(AM_MEDIA_TYPE *mt)
         return E_FAIL;
     }
     if (mt->majortype != MEDIATYPE_Video ||
-        mt->subtype != MEDIASUBTYPE_RGB24)
+        mt->subtype != MEDIASUBTYPE_RGB32)
     {
         LOG("-> E_FAIL (invalid media type)\n");
         return E_FAIL;
@@ -221,7 +221,7 @@ Softcam::SetFormat(AM_MEDIA_TYPE *mt)
             LOG("-> E_FAIL (invalid dimension)\n");
             return E_FAIL;
         }
-        if (pFormat->bmiHeader.biBitCount != 24 ||
+        if (pFormat->bmiHeader.biBitCount != 32 ||
             pFormat->bmiHeader.biCompression != BI_RGB)
         {
             LOG("-> E_FAIL (invalid color format)\n");
