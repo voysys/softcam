@@ -7,8 +7,8 @@
 namespace softcam {
 
 
-const char NamedMutexName[] = "DirectShow Softcam/NamedMutex";
-const char SharedMemoryName[] = "DirectShow Softcam/SharedMemory";
+const char NamedMutexName[] = "Oden Virtual Webcam/NamedMutex";
+const char SharedMemoryName[] = "Oden Virtual Webcam/SharedMemory";
 
 
 struct FrameBuffer::Header
@@ -188,7 +188,7 @@ void FrameBuffer::write(const void* image_bits)
     std::memcpy(
             frame->imageData(),
             image_bits,
-            (std::size_t)3 * frame->m_width * frame->m_height);
+            (std::size_t)4 * frame->m_width * frame->m_height);
     frame->m_frame_counter += 1;
 }
 

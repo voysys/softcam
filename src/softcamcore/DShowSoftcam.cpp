@@ -164,7 +164,7 @@ CUnknown * Softcam::CreateInstance(
 }
 
 Softcam::Softcam(LPUNKNOWN lpunk, const GUID& clsid, HRESULT *phr) :
-    CSource(NAME("DirectShow Softcam"), lpunk, clsid),
+    CSource(NAME("Oden Virtual Webcam"), lpunk, clsid),
     m_frame_buffer(FrameBuffer::open()),
     m_valid(m_frame_buffer ? true : false),
     m_width(m_frame_buffer.width()),
@@ -174,7 +174,7 @@ Softcam::Softcam(LPUNKNOWN lpunk, const GUID& clsid, HRESULT *phr) :
     CAutoLock lock(&m_cStateLock);
 
     m_paStreams = new CSourceStream*[1];
-    m_paStreams[0] = new SoftcamStream(phr, this, L"DirectShow Softcam Stream");
+    m_paStreams[0] = new SoftcamStream(phr, this, L"Oden Virtual Webcam Stream");
 }
 
 
@@ -367,7 +367,7 @@ Softcam::releaseFrameBuffer()
 SoftcamStream::SoftcamStream(HRESULT *phr,
                          Softcam *pParent,
                          LPCWSTR pPinName) :
-    CSourceStream(NAME("DirectShow Softcam Stream"), phr, pParent, pPinName),
+    CSourceStream(NAME("Oden Virtual Webcam Stream"), phr, pParent, pPinName),
     m_valid(pParent->valid()),
     m_width(pParent->width()),
     m_height(pParent->height())
