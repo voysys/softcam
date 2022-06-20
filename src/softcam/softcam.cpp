@@ -7,17 +7,17 @@
 #include <softcamcore/SenderAPI.h>
 
 
-// {AEF3B972-5FA5-4647-9571-358EB472BC9E}
-DEFINE_GUID(CLSID_DShowSoftcam,
-0xaef3b972, 0x5fa5, 0x4647, 0x95, 0x71, 0x35, 0x8e, 0xb4, 0x72, 0xbc, 0x9e);
+// {EA27EAE5-7FA2-432A-9914-F529AE8D0F06}
+DEFINE_GUID(CLSID_DShowOdenVirtual,
+    0xea27eae5, 0x7fa2, 0x432a, 0x99, 0x14, 0xf5, 0x29, 0xae, 0x8d, 0x0f, 0x06);
 
 
 namespace {
 
 // Setup data
 
-const wchar_t FILTER_NAME[] = L"DirectShow Softcam";
-const GUID &FILTER_CLASSID = CLSID_DShowSoftcam;
+const wchar_t FILTER_NAME[] = L"Oden Virtual Webcam";
+const GUID &FILTER_CLASSID = CLSID_DShowOdenVirtual;
 
 const AMOVIESETUP_MEDIATYPE s_pin_types[] =
 {
