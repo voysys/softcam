@@ -99,7 +99,7 @@ FrameBuffer FrameBuffer::open()
             fb.m_shmem = {};
             return fb;
         }
-        uint32_t image_size = (uint32_t)frame->m_width * (uint32_t)frame->m_height * 3;
+        uint32_t image_size = (uint32_t)frame->m_width * (uint32_t)frame->m_height * 4;
         if (size <= frame->m_image_offset ||
             size - frame->m_image_offset < image_size)
         {
@@ -274,7 +274,7 @@ uint32_t FrameBuffer::calcMemorySize(
                         uint16_t height)
 {
     uint32_t header_size = sizeof(Header);
-    uint32_t image_size = (uint32_t)width * height * 3;
+    uint32_t image_size = (uint32_t)width * height * 4;
     uint32_t shmem_size = header_size + image_size;
     return shmem_size;
 }
