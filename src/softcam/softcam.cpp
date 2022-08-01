@@ -52,6 +52,8 @@
         pFM2->Release();                                                                                               \
     }
 
+// Generated with GUIDGEN.exe
+
 // {DA1C0DC0-6A2E-4983-BFB8-D9B446D0D3E2}
 DEFINE_GUID(FILTER_CLSID(1), 0xda1c0dc0, 0x6a2e, 0x4983, 0xbf, 0xb8, 0xd9, 0xb4, 0x46, 0xd0, 0xd3, 0xe2);
 
