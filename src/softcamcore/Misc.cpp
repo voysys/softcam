@@ -10,19 +10,19 @@
 namespace softcam {
 
 std::string wide_to_utf8(const std::wstring & in) {
-    int32_t charsNeeded =
-        WideCharToMultiByte(CP_UTF8, 0, in.c_str(), in.size(), nullptr, 0, nullptr, nullptr);
+    int charsNeeded =
+        WideCharToMultiByte(CP_UTF8, 0, in.c_str(), static_cast<int>(in.size()), nullptr, 0, nullptr, nullptr);
 
     std::vector<char> buffer;
     buffer.resize(charsNeeded);
 
-    int32_t charsWritten = WideCharToMultiByte(
+    int charsWritten = WideCharToMultiByte(
         CP_UTF8,
         0,
         in.c_str(),
-        in.size(),
+        static_cast<int>(in.size()),
         buffer.data(),
-        buffer.size(),
+        static_cast<int>(buffer.size()),
         nullptr,
         nullptr);
 

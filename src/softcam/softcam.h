@@ -1,6 +1,5 @@
 #pragma once
 
-
 //
 // Softcam Sender API
 //
@@ -9,7 +8,7 @@
 
 extern "C"
 {
-    using scCamera = void*;
+    using scCamera = void *;
 
     /*
         This function creates a virtual camera instance.
@@ -40,12 +39,12 @@ extern "C"
         function, the virtual camera intance and associated resources are
         deleted automatically.
     */
-    scCamera    SOFTCAM_API scCreateCamera(const char * name, int width, int height, float framerate = 60.0f);
+    scCamera SOFTCAM_API scCreateCamera(int width, int height, float framerate = 60.0f);
 
     /*
         This function deletes the specified virtual camera instance.
     */
-    void        SOFTCAM_API scDeleteCamera(scCamera camera);
+    void SOFTCAM_API scDeleteCamera(scCamera camera);
 
     /*
         This function sends a new frame of the specified virtual camera.
@@ -60,7 +59,7 @@ extern "C"
         This is useful if the application has a real-time source stream
         such as actual webcams.
     */
-    void        SOFTCAM_API scSendFrame(scCamera camera, const void* image_bits);
+    void SOFTCAM_API scSendFrame(scCamera camera, const void *image_bits);
 
     /*
         This function waits until an application connects to the specified
@@ -73,5 +72,7 @@ extern "C"
         accessed by an application before this function returns. Otherwise,
         this function returns `false`.
     */
-    bool        SOFTCAM_API scWaitForConnection(scCamera camera, float timeout = 0.0f);
+    bool SOFTCAM_API scWaitForConnection(scCamera camera, float timeout = 0.0f);
+
+    const char *SOFTCAM_API scGetCameraName(scCamera camera);
 }

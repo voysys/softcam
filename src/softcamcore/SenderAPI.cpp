@@ -1,15 +1,15 @@
 #include "SenderAPI.h"
 
 #include <atomic>
-#include <vector>
 #include <shared_mutex>
 #include <thread>
+#include <vector>
 
 #include "FrameBuffer.h"
 #include "Misc.h"
 
-
-namespace {
+namespace
+{
 
 typedef std::shared_mutex Mutex;
 typedef std::shared_lock<std::shared_mutex> ReadLock;
@@ -17,82 +17,113 @@ typedef std::unique_lock<std::shared_mutex> WriteLock;
 
 struct Camera
 {
-    softcam::FrameBuffer    m_frame_buffer;
-    softcam::Timer          m_timer;
-    std::string             m_name;
+    softcam::FrameBuffer m_frame_buffer;
+    softcam::Timer m_timer;
+    std::string m_name;
 };
 
-std::vector<Camera*>    s_cameras;
+std::vector<Camera *> s_cameras;
+std::vector<std::string> s_camera_names = {
+    "Oden Virtual Webcam 16", "Oden Virtual Webcam 15", "Oden Virtual Webcam 14", "Oden Virtual Webcam 13",
+    "Oden Virtual Webcam 12", "Oden Virtual Webcam 11", "Oden Virtual Webcam 10", "Oden Virtual Webcam 9",
+    "Oden Virtual Webcam 8",  "Oden Virtual Webcam 7",  "Oden Virtual Webcam 6",  "Oden Virtual Webcam 5",
+    "Oden Virtual Webcam 4",  "Oden Virtual Webcam 3",  "Oden Virtual Webcam 2",  "Oden Virtual Webcam 1"};
 Mutex s_cameras_mutex;
 
-} //namespace
+} // namespace
 
-
-namespace softcam {
-namespace sender {
-
-CameraHandle    CreateCamera(const char * name, int width, int height, float framerate)
+namespace softcam
 {
-    if (auto fb = FrameBuffer::create(name, width, height, framerate))
+namespace sender
+{
+
+CameraHandle CreateCamera(int width, int height, float framerate)
+{
+    if (s_camera_names.empty())
+    {
+        return nullptr;
+    }
+
+    std::string camera_name = s_camera_names.back();
+    s_camera_names.pop_back();
+
+    if (auto fb = FrameBuffer::create(camera_name.c_str(), width, height, framerate))
     {
         WriteLock write_lock(s_cameras_mutex);
         {
-            s_cameras.erase(std::remove_if(s_cameras.begin(), s_cameras.end(), [name](Camera * cam) {
-                if (cam->m_name == name) {
-                    cam->m_frame_buffer.deactivate();
-                    delete cam;
+            s_cameras.erase(std::remove_if(s_cameras.begin(), s_cameras.end(),
+                                           [&camera_name](Camera *cam) {
+                                               if (cam->m_name == camera_name)
+                                               {
+                                                   cam->m_frame_buffer.deactivate();
+                                                   delete cam;
 
-                    return true;
-                } else {
-                    return false;
-                }
-            }), s_cameras.end());
+                                                   return true;
+                                               }
+                                               else
+                                               {
+                                                   return false;
+                                               }
+                                           }),
+                            s_cameras.end());
 
-            Camera* camera = new Camera{ fb, Timer(), name };
+            Camera *camera = new Camera{fb, Timer(), camera_name};
             s_cameras.push_back(camera);
 
             return camera;
         }
     }
+
+    s_camera_names.push_back(camera_name);
     return nullptr;
 }
 
-void            DeleteCamera(CameraHandle camera)
+void DeleteCamera(CameraHandle camera)
 {
-    Camera* target = static_cast<Camera*>(camera);
+    Camera *target = static_cast<Camera *>(camera);
 
-    if (target == nullptr) {
+    if (target == nullptr)
+    {
         return;
     }
 
     WriteLock write_lock(s_cameras_mutex);
     {
-        s_cameras.erase(std::remove_if(s_cameras.begin(), s_cameras.end(), [target](Camera * cam) {
-            if (cam == target) {
-                target->m_frame_buffer.deactivate();
-                delete cam;
+        s_cameras.erase(std::remove_if(s_cameras.begin(), s_cameras.end(),
+                                       [target](Camera *cam) {
+                                           if (cam == target)
+                                           {
+                                               target->m_frame_buffer.deactivate();
 
-                return true;
-            } else {
-                return false;
-            }
-        }), s_cameras.end());
+                                               s_camera_names.push_back(target->m_name);
+
+                                               delete cam;
+
+                                               return true;
+                                           }
+                                           else
+                                           {
+                                               return false;
+                                           }
+                                       }),
+                        s_cameras.end());
     }
 }
 
-void            SendFrame(CameraHandle camera, const void* image_bits)
+void SendFrame(CameraHandle camera, const void *image_bits)
 {
-    Camera* target = static_cast<Camera*>(camera);
+    Camera *target = static_cast<Camera *>(camera);
 
-    if (target == nullptr) {
+    if (target == nullptr)
+    {
         return;
     }
 
     ReadLock read_lock(s_cameras_mutex);
 
-    for (Camera * cam : s_cameras) 
+    for (Camera *cam : s_cameras)
     {
-        if (cam == target && image_bits != nullptr) 
+        if (cam == target && image_bits != nullptr)
         {
 
             auto framerate = target->m_frame_buffer.framerate();
@@ -138,18 +169,21 @@ void            SendFrame(CameraHandle camera, const void* image_bits)
     }
 }
 
-bool            WaitForConnection(CameraHandle camera, float timeout)
+bool WaitForConnection(CameraHandle camera, float timeout)
 {
-    Camera* target = static_cast<Camera*>(camera);
+    Camera *target = static_cast<Camera *>(camera);
 
-    if (target == nullptr) {
+    if (target == nullptr)
+    {
         return false;
     }
 
     ReadLock read_lock(s_cameras_mutex);
 
-    for (Camera * cam : s_cameras) {
-        if (cam == target) {
+    for (Camera *cam : s_cameras)
+    {
+        if (cam == target)
+        {
 
             Timer timer;
             while (!target->m_frame_buffer.connected())
@@ -167,18 +201,22 @@ bool            WaitForConnection(CameraHandle camera, float timeout)
     return false;
 }
 
-const char * GetWebcamName(CameraHandle camera) {
+const char *GetCameraName(CameraHandle camera)
+{
 
-    Camera* target = static_cast<Camera*>(camera);
+    Camera *target = static_cast<Camera *>(camera);
 
-    if (target == nullptr) {
+    if (target == nullptr)
+    {
         return nullptr;
     }
 
     ReadLock read_lock(s_cameras_mutex);
 
-    for (Camera * cam : s_cameras) {
-        if (cam == target) {
+    for (Camera *cam : s_cameras)
+    {
+        if (cam == target)
+        {
             return cam->m_name.c_str();
         }
     }
@@ -186,5 +224,5 @@ const char * GetWebcamName(CameraHandle camera) {
     return nullptr;
 }
 
-} //namespace sender
-} //namespace softcam
+} // namespace sender
+} // namespace softcam
