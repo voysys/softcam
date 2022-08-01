@@ -19,10 +19,11 @@ class FrameBuffer
 {
  public:
     static FrameBuffer create(
+                        const char *    name,
                         int             width,
                         int             height,
                         float           framerate = 0.0f);
-    static FrameBuffer open();
+    static FrameBuffer open(const char * name);
 
     FrameBuffer& operator =(const FrameBuffer&);
     explicit operator bool() const { return handle() != nullptr; }

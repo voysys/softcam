@@ -12,6 +12,7 @@ class Softcam : public CSource, public IAMStreamConfig
 {
 public:
     static CUnknown* CreateInstance(
+                    const wchar_t * name,
                     LPUNKNOWN   lpunk,
                     const GUID& clsid,
                     HRESULT*    phr);
@@ -39,8 +40,9 @@ private:
     const int   m_width;
     const int   m_height;
     const float m_framerate;
+    std::string m_name;
 
-    Softcam(LPUNKNOWN lpunk, const GUID& clsid, HRESULT *phr);
+    Softcam(const wchar_t * name, LPUNKNOWN lpunk, const GUID& clsid, HRESULT *phr);
 };
 
 

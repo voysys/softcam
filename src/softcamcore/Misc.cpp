@@ -3,9 +3,31 @@
 #include <windows.h>
 #include <cmath>
 #include <cassert>
+#include <string>
+#include <vector>
 
 
 namespace softcam {
+
+std::string wide_to_utf8(const std::wstring & in) {
+    int32_t charsNeeded =
+        WideCharToMultiByte(CP_UTF8, 0, in.c_str(), in.size(), nullptr, 0, nullptr, nullptr);
+
+    std::vector<char> buffer;
+    buffer.resize(charsNeeded);
+
+    int32_t charsWritten = WideCharToMultiByte(
+        CP_UTF8,
+        0,
+        in.c_str(),
+        in.size(),
+        buffer.data(),
+        buffer.size(),
+        nullptr,
+        nullptr);
+
+    return std::string(buffer.data(), buffer.data() + charsWritten);
+}
 
 
 Timer::Timer()
@@ -70,7 +92,8 @@ void Timer::sleep(float seconds)
 
 
 NamedMutex::NamedMutex(const char* name) :
-    m_handle(CreateMutexA(nullptr, false, name), closeHandle)
+    m_handle(CreateMutexA(nullptr, false, name), closeHandle), 
+    m_name(name)
 {
     assert( m_handle.get() != nullptr && "Creating a named mutex failed" );
 }

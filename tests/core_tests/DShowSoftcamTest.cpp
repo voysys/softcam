@@ -13,7 +13,7 @@ namespace sc = softcam;
 
 std::unique_ptr<sc::FrameBuffer> createFrameBufer(int width, int height, float framerate)
 {
-    return std::make_unique<sc::FrameBuffer>(sc::FrameBuffer::create(width, height, framerate));
+    return std::make_unique<sc::FrameBuffer>(sc::FrameBuffer::create("test", width, height, framerate));
 }
 
 void checkMediaType320x240(const AM_MEDIA_TYPE *pmt)
@@ -63,7 +63,7 @@ class Softcam : public ::testing::Test
 TEST_F(Softcam, CreateInstance)
 {
     HRESULT hr = 555;
-    CUnknown* ret = sc::Softcam::CreateInstance(nullptr, SOME_GUID, &hr);
+    CUnknown* ret = sc::Softcam::CreateInstance(L"test", nullptr, SOME_GUID, &hr);
 
     EXPECT_EQ( hr, S_OK );
     ASSERT_NE( ret, nullptr );
@@ -74,7 +74,7 @@ TEST_F(Softcam, CreateInstance)
 TEST_F(Softcam, QueryInterface)
 {
     HRESULT hr = 555;
-    m_softcam = (sc::Softcam*)sc::Softcam::CreateInstance(nullptr, SOME_GUID, &hr);
+    m_softcam = (sc::Softcam*)sc::Softcam::CreateInstance(L"test", nullptr, SOME_GUID, &hr);
     ASSERT_NE( m_softcam, nullptr );
     m_softcam->AddRef();
 
@@ -102,7 +102,7 @@ TEST_F(Softcam, QueryInterface)
 TEST_F(Softcam, AttributesNoServer)
 {
     HRESULT hr = 555;
-    m_softcam = (sc::Softcam*)sc::Softcam::CreateInstance(nullptr, SOME_GUID, &hr);
+    m_softcam = (sc::Softcam*)sc::Softcam::CreateInstance(L"test", nullptr, SOME_GUID, &hr);
     ASSERT_NE( m_softcam, nullptr );
     m_softcam->AddRef();
 
@@ -118,7 +118,7 @@ TEST_F(Softcam, AttributesNormal)
     auto fb = createFrameBufer(320, 240, 60);
 
     HRESULT hr = 555;
-    m_softcam = (sc::Softcam*)sc::Softcam::CreateInstance(nullptr, SOME_GUID, &hr);
+    m_softcam = (sc::Softcam*)sc::Softcam::CreateInstance(L"test", nullptr, SOME_GUID, &hr);
     ASSERT_NE( m_softcam, nullptr );
     m_softcam->AddRef();
 
@@ -135,7 +135,7 @@ TEST_F(Softcam, AttributesDeactivatedServer)
     fb->deactivate();
 
     HRESULT hr = 555;
-    m_softcam = (sc::Softcam*)sc::Softcam::CreateInstance(nullptr, SOME_GUID, &hr);
+    m_softcam = (sc::Softcam*)sc::Softcam::CreateInstance(L"test", nullptr, SOME_GUID, &hr);
     ASSERT_NE( m_softcam, nullptr );
     m_softcam->AddRef();
 
@@ -151,10 +151,10 @@ TEST_F(Softcam, AttributesMultipleReceiver)
     auto fb = createFrameBufer(320, 240, 60);
 
     HRESULT hr = 555;
-    m_softcam = (sc::Softcam*)sc::Softcam::CreateInstance(nullptr, SOME_GUID, &hr);
+    m_softcam = (sc::Softcam*)sc::Softcam::CreateInstance(L"Test", nullptr, SOME_GUID, &hr);
     ASSERT_NE( m_softcam, nullptr );
     m_softcam->AddRef();
-    sc::Softcam* softcam2 = (sc::Softcam*)sc::Softcam::CreateInstance(nullptr, SOME_GUID, &hr);
+    sc::Softcam* softcam2 = (sc::Softcam*)sc::Softcam::CreateInstance(L"Test", nullptr, SOME_GUID, &hr);
     ASSERT_NE( softcam2, nullptr );
     softcam2->AddRef();
 
@@ -182,7 +182,7 @@ TEST_F(Softcam, AttributesRebootingReceiver)
     auto fb = createFrameBufer(320, 240, 60);
 
     HRESULT hr = 555;
-    m_softcam = (sc::Softcam*)sc::Softcam::CreateInstance(nullptr, SOME_GUID, &hr);
+    m_softcam = (sc::Softcam*)sc::Softcam::CreateInstance(L"Test", nullptr, SOME_GUID, &hr);
     ASSERT_NE( m_softcam, nullptr );
     m_softcam->AddRef();
 
@@ -195,7 +195,7 @@ TEST_F(Softcam, AttributesRebootingReceiver)
     m_softcam->Release();
     m_softcam = nullptr;
 
-    m_softcam = (sc::Softcam*)sc::Softcam::CreateInstance(nullptr, SOME_GUID, &hr);
+    m_softcam = (sc::Softcam*)sc::Softcam::CreateInstance(L"Test", nullptr, SOME_GUID, &hr);
     ASSERT_NE( m_softcam, nullptr );
     m_softcam->AddRef();
 
@@ -216,7 +216,7 @@ TEST_F(Softcam, AttributesRebootingSender)
     auto fb = createFrameBufer(320, 240, 60);
 
     HRESULT hr = 555;
-    m_softcam = (sc::Softcam*)sc::Softcam::CreateInstance(nullptr, SOME_GUID, &hr);
+    m_softcam = (sc::Softcam*)sc::Softcam::CreateInstance(L"Test", nullptr, SOME_GUID, &hr);
     ASSERT_NE( m_softcam, nullptr );
     m_softcam->AddRef();
 
@@ -255,7 +255,7 @@ TEST_F(Softcam, AttributesIncompatibleSender)
     auto fb = createFrameBufer(320, 240, 60);
 
     HRESULT hr = 555;
-    m_softcam = (sc::Softcam*)sc::Softcam::CreateInstance(nullptr, SOME_GUID, &hr);
+    m_softcam = (sc::Softcam*)sc::Softcam::CreateInstance(L"Test", nullptr, SOME_GUID, &hr);
     ASSERT_NE( m_softcam, nullptr );
     m_softcam->AddRef();
 
@@ -279,7 +279,7 @@ TEST_F(Softcam, AttributesIncompatibleSender)
 TEST_F(Softcam, IAMStreamConfigNoServer)
 {
     HRESULT hr = 555;
-    m_softcam = (sc::Softcam*)sc::Softcam::CreateInstance(nullptr, SOME_GUID, &hr);
+    m_softcam = (sc::Softcam*)sc::Softcam::CreateInstance(L"Test", nullptr, SOME_GUID, &hr);
     ASSERT_NE( m_softcam, nullptr );
     m_softcam->AddRef();
 
@@ -307,7 +307,7 @@ TEST_F(Softcam, IAMStreamConfigNoServer)
 TEST_F(Softcam, IAMStreamConfigNullPointer)
 {
     HRESULT hr = 555;
-    m_softcam = (sc::Softcam*)sc::Softcam::CreateInstance(nullptr, SOME_GUID, &hr);
+    m_softcam = (sc::Softcam*)sc::Softcam::CreateInstance(L"Test", nullptr, SOME_GUID, &hr);
     ASSERT_NE( m_softcam, nullptr );
     m_softcam->AddRef();
 
@@ -341,7 +341,7 @@ TEST_F(Softcam, IAMStreamConfigNormal)
     auto fb = createFrameBufer(320, 240, 60);
 
     HRESULT hr = 555;
-    m_softcam = (sc::Softcam*)sc::Softcam::CreateInstance(nullptr, SOME_GUID, &hr);
+    m_softcam = (sc::Softcam*)sc::Softcam::CreateInstance(L"Test", nullptr, SOME_GUID, &hr);
     ASSERT_NE( m_softcam, nullptr );
     m_softcam->AddRef();
 
@@ -375,7 +375,7 @@ TEST_F(Softcam, IAMStreamConfigNormal)
 TEST_F(Softcam, IBaseFilterEnumPins)
 {
     HRESULT hr = 555;
-    m_softcam = (sc::Softcam*)sc::Softcam::CreateInstance(nullptr, SOME_GUID, &hr);
+    m_softcam = (sc::Softcam*)sc::Softcam::CreateInstance(L"Test", nullptr, SOME_GUID, &hr);
     ASSERT_NE( m_softcam, nullptr );
     m_softcam->AddRef();
 
@@ -409,7 +409,7 @@ TEST_F(Softcam, IBaseFilterEnumPins)
 TEST_F(Softcam, IBaseFilterQueryFilterInfo)
 {
     HRESULT hr = 555;
-    m_softcam = (sc::Softcam*)sc::Softcam::CreateInstance(nullptr, SOME_GUID, &hr);
+    m_softcam = (sc::Softcam*)sc::Softcam::CreateInstance(L"Test", nullptr, SOME_GUID, &hr);
     ASSERT_NE( m_softcam, nullptr );
     m_softcam->AddRef();
 
@@ -443,7 +443,7 @@ class SoftcamStream : public ::testing::Test
     void SetUpSoftcamStream()
     {
         HRESULT hr = 555;
-        m_softcam = (sc::Softcam*)sc::Softcam::CreateInstance(nullptr, SOME_GUID, &hr);
+        m_softcam = (sc::Softcam*)sc::Softcam::CreateInstance(L"Test", nullptr, SOME_GUID, &hr);
         if (m_softcam == nullptr)
         {
             return;

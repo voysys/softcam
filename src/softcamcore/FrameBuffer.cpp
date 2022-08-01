@@ -7,8 +7,8 @@
 namespace softcam {
 
 
-const char NamedMutexName[] = "Oden Virtual Webcam/NamedMutex";
-const char SharedMemoryName[] = "Oden Virtual Webcam/SharedMemory";
+// const char NamedMutexName[] = "Oden Virtual Webcam/NamedMutex";
+// const char SharedMemoryName[] = "Oden Virtual Webcam/SharedMemory";
 
 
 struct FrameBuffer::Header
@@ -35,11 +35,15 @@ uint8_t* FrameBuffer::Header::imageData()
 
 
 FrameBuffer FrameBuffer::create(
+                        const char *    name,
                         int             width,
                         int             height,
                         float           framerate)
 {
-    FrameBuffer fb(NamedMutexName);
+    std::string namedMutexName = std::string(name) + "/NamedMutex";
+    std::string sharedMemoryName = std::string(name) + "/SharedMemory";
+
+    FrameBuffer fb(namedMutexName.c_str());
 
     if (!checkDimensions(width, height))
     {
@@ -51,7 +55,7 @@ FrameBuffer FrameBuffer::create(
     }
 
     auto shmem_size = calcMemorySize((uint16_t)width, (uint16_t)height);
-    fb.m_shmem = SharedMemory::create(SharedMemoryName, shmem_size);
+    fb.m_shmem = SharedMemory::create(sharedMemoryName.c_str(), shmem_size);
     if (fb.m_shmem)
     {
         std::lock_guard<NamedMutex> lock(fb.m_mutex);
@@ -77,11 +81,15 @@ FrameBuffer FrameBuffer::create(
     return fb;
 }
 
-FrameBuffer FrameBuffer::open()
+FrameBuffer FrameBuffer::open(const char * name)
 {
-    FrameBuffer fb(NamedMutexName);
 
-    fb.m_shmem = SharedMemory::open(SharedMemoryName);
+    std::string namedMutexName = std::string(name) + "/NamedMutex";
+    std::string sharedMemoryName = std::string(name) + "/SharedMemory";
+
+    FrameBuffer fb(namedMutexName.c_str());
+
+    fb.m_shmem = SharedMemory::open(sharedMemoryName.c_str());
     if (fb.m_shmem)
     {
         std::lock_guard<NamedMutex> lock(fb.m_mutex);

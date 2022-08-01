@@ -2,10 +2,11 @@
 
 #include <memory>
 #include <cstdint>
-
+#include <string>
 
 namespace softcam {
 
+std::string wide_to_utf8(const std::wstring & in);
 
 /// Time Measurement and Sleep
 class Timer
@@ -36,6 +37,7 @@ class NamedMutex
 
  private:
     std::shared_ptr<void>   m_handle;
+    std::string m_name;
 
     static void closeHandle(void*);
 };

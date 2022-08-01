@@ -40,7 +40,7 @@ extern "C"
         function, the virtual camera intance and associated resources are
         deleted automatically.
     */
-    scCamera    SOFTCAM_API scCreateCamera(int width, int height, float framerate = 60.0f);
+    scCamera    SOFTCAM_API scCreateCamera(const char * name, int width, int height, float framerate = 60.0f);
 
     /*
         This function deletes the specified virtual camera instance.

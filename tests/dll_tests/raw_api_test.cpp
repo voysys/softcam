@@ -6,19 +6,19 @@ namespace {
 
 TEST(scCreateCamera, Basic) {
     {
-        void* cam = scCreateCamera(320, 240, 60);
+        void* cam = scCreateCamera("test",320, 240, 60);
         EXPECT_NE(cam, nullptr);
         EXPECT_NO_THROW({ scDeleteCamera(cam); });
     }{
-        void* cam = scCreateCamera(1920, 1080, 30);
+        void* cam = scCreateCamera("test",1920, 1080, 30);
         EXPECT_NE(cam, nullptr);
         EXPECT_NO_THROW({ scDeleteCamera(cam); });
     }
 }
 
 TEST(scCreateCamera, MultipleInstancingFails) {
-    void* cam1 = scCreateCamera(320, 240, 60);
-    void* cam2 = scCreateCamera(320, 240, 60);
+    void* cam1 = scCreateCamera("test",320, 240, 60);
+    void* cam2 = scCreateCamera("test",320, 240, 60);
 
     EXPECT_NE(cam1, nullptr);
     EXPECT_EQ(cam2, nullptr);
@@ -27,14 +27,14 @@ TEST(scCreateCamera, MultipleInstancingFails) {
 }
 
 TEST(scCreateCamera, FramerateIsOptional) {
-    void* cam = scCreateCamera(320, 240);
+    void* cam = scCreateCamera("test",320, 240);
 
     EXPECT_NE(cam, nullptr);
     scDeleteCamera(cam);
 }
 
 TEST(scCreateCamera, ZeroMeansUnlimitedVariableFramerate) {
-    void* cam = scCreateCamera(320, 240, 0.0f);
+    void* cam = scCreateCamera("test",320, 240, 0.0f);
 
     EXPECT_NE(cam, nullptr);
     scDeleteCamera(cam);
@@ -42,38 +42,38 @@ TEST(scCreateCamera, ZeroMeansUnlimitedVariableFramerate) {
 
 TEST(scCreateCamera, InvalidArgs) {
     void* cam;
-    cam = scCreateCamera(0, 240, 60);
+    cam = scCreateCamera("test",0, 240, 60);
     EXPECT_EQ(cam, nullptr);
     scDeleteCamera(cam);
 
-    cam = scCreateCamera(320, 0, 60);
+    cam = scCreateCamera("test",320, 0, 60);
     EXPECT_EQ(cam, nullptr);
     scDeleteCamera(cam);
 
-    cam = scCreateCamera(0, 0, 60);
+    cam = scCreateCamera("test",0, 0, 60);
     EXPECT_EQ(cam, nullptr);
     scDeleteCamera(cam);
 
-    cam = scCreateCamera(-320, 240, 60);
+    cam = scCreateCamera("test",-320, 240, 60);
     EXPECT_EQ(cam, nullptr);
     scDeleteCamera(cam);
 
-    cam = scCreateCamera(320, -240, 60);
+    cam = scCreateCamera("test",320, -240, 60);
     EXPECT_EQ(cam, nullptr);
     scDeleteCamera(cam);
 
-    cam = scCreateCamera(320, 240, -60);
+    cam = scCreateCamera("test",320, 240, -60);
     EXPECT_EQ(cam, nullptr);
     scDeleteCamera(cam);
 }
 
 TEST(scCreateCamera, TooLarge) {
     void* cam;
-    cam = scCreateCamera(32000, 240, 60);
+    cam = scCreateCamera("test",32000, 240, 60);
     EXPECT_EQ(cam, nullptr);
     scDeleteCamera(cam);
 
-    cam = scCreateCamera(320, 24000, 60);
+    cam = scCreateCamera("test",320, 24000, 60);
     EXPECT_EQ(cam, nullptr);
     scDeleteCamera(cam);
 }
@@ -83,7 +83,7 @@ TEST(scDeleteCamera, IgnoresNullPointer) {
 }
 
 TEST(scDeleteCamera, IgnoresDoubleFree) {
-    void* cam = scCreateCamera(320, 240, 60);
+    void* cam = scCreateCamera("test",320, 240, 60);
     scDeleteCamera(cam);
     scDeleteCamera(cam);
 }

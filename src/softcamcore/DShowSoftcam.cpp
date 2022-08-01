@@ -7,6 +7,7 @@
 #include <cmath>
 #include <chrono>
 #include <ctime>
+#include <vector>
 
 
 namespace {
@@ -153,6 +154,7 @@ namespace softcam {
 
 
 CUnknown * Softcam::CreateInstance(
+                    const wchar_t * name,
                     LPUNKNOWN   lpunk,
                     const GUID& clsid,
                     HRESULT*    phr)
@@ -160,16 +162,17 @@ CUnknown * Softcam::CreateInstance(
     OPEN_LOGFILE();
     LOG("===== logging started =====\n");
 
-    return new Softcam(lpunk, clsid, phr);
+    return new Softcam(name, lpunk, clsid, phr);
 }
 
-Softcam::Softcam(LPUNKNOWN lpunk, const GUID& clsid, HRESULT *phr) :
+Softcam::Softcam(const wchar_t * name, LPUNKNOWN lpunk, const GUID& clsid, HRESULT *phr) :
     CSource(NAME("Oden Virtual Webcam"), lpunk, clsid),
-    m_frame_buffer(FrameBuffer::open()),
+    m_frame_buffer(FrameBuffer::open(wide_to_utf8(name).c_str())),
     m_valid(m_frame_buffer ? true : false),
     m_width(m_frame_buffer.width()),
     m_height(m_frame_buffer.height()),
-    m_framerate(m_frame_buffer.framerate())
+    m_framerate(m_frame_buffer.framerate()),
+    m_name(wide_to_utf8(name))
 {
     CAutoLock lock(&m_cStateLock);
 
@@ -338,7 +341,7 @@ FrameBuffer* Softcam::getFrameBuffer()
     CAutoLock lock(&m_cStateLock);
     if (!m_frame_buffer)
     {
-        auto fb = FrameBuffer::open();
+        auto fb = FrameBuffer::open(m_name.c_str());
         if (fb &&
             fb.active() &&
             fb.width() == m_width &&

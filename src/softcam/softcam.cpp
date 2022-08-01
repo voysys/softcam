@@ -1,7 +1,9 @@
 #include "softcam.h"
 
+// clang-format: off
 #include <olectl.h>
 #include <initguid.h>
+// clang-format: on
 
 #include <softcamcore/DShowSoftcam.h>
 #include <softcamcore/SenderAPI.h>
@@ -16,7 +18,14 @@ namespace {
 
 // Setup data
 
-const wchar_t FILTER_NAME[] = L"Oden Virtual Webcam";
+const wchar_t FILTER_NAME_1[] = L"Oden Virtual Webcam 1";
+const wchar_t FILTER_NAME_2[] = L"Oden Virtual Webcam 2";
+const wchar_t FILTER_NAME_3[] = L"Oden Virtual Webcam 3";
+const wchar_t FILTER_NAME_4[] = L"Oden Virtual Webcam 4";
+const wchar_t FILTER_NAME_5[] = L"Oden Virtual Webcam 5";
+const wchar_t FILTER_NAME_6[] = L"Oden Virtual Webcam 6";
+const wchar_t FILTER_NAME_7[] = L"Oden Virtual Webcam 7";
+const wchar_t FILTER_NAME_8[] = L"Oden Virtual Webcam 8";
 const GUID &FILTER_CLASSID = CLSID_DShowOdenVirtual;
 
 const AMOVIESETUP_MEDIATYPE s_pin_types[] =
@@ -50,9 +59,44 @@ const REGFILTER2 s_reg_filter2 =
     s_pins
 };
 
-CUnknown * WINAPI CreateSoftcamInstance(LPUNKNOWN lpunk, HRESULT *phr)
+CUnknown * WINAPI CreateSoftcamInstance_1(LPUNKNOWN lpunk, HRESULT *phr)
 {
-    return softcam::Softcam::CreateInstance(lpunk, FILTER_CLASSID, phr);
+    return softcam::Softcam::CreateInstance(FILTER_NAME_1, lpunk, FILTER_CLASSID, phr);
+}
+
+CUnknown * WINAPI CreateSoftcamInstance_2(LPUNKNOWN lpunk, HRESULT *phr)
+{
+    return softcam::Softcam::CreateInstance(FILTER_NAME_2, lpunk, FILTER_CLASSID, phr);
+}
+
+CUnknown * WINAPI CreateSoftcamInstance_3(LPUNKNOWN lpunk, HRESULT *phr)
+{
+    return softcam::Softcam::CreateInstance(FILTER_NAME_3, lpunk, FILTER_CLASSID, phr);
+}
+
+CUnknown * WINAPI CreateSoftcamInstance_4(LPUNKNOWN lpunk, HRESULT *phr)
+{
+    return softcam::Softcam::CreateInstance(FILTER_NAME_4, lpunk, FILTER_CLASSID, phr);
+}
+
+CUnknown * WINAPI CreateSoftcamInstance_5(LPUNKNOWN lpunk, HRESULT *phr)
+{
+    return softcam::Softcam::CreateInstance(FILTER_NAME_5, lpunk, FILTER_CLASSID, phr);
+}
+
+CUnknown * WINAPI CreateSoftcamInstance_6(LPUNKNOWN lpunk, HRESULT *phr)
+{
+    return softcam::Softcam::CreateInstance(FILTER_NAME_6, lpunk, FILTER_CLASSID, phr);
+}
+
+CUnknown * WINAPI CreateSoftcamInstance_7(LPUNKNOWN lpunk, HRESULT *phr)
+{
+    return softcam::Softcam::CreateInstance(FILTER_NAME_7, lpunk, FILTER_CLASSID, phr);
+}
+
+CUnknown * WINAPI CreateSoftcamInstance_8(LPUNKNOWN lpunk, HRESULT *phr)
+{
+    return softcam::Softcam::CreateInstance(FILTER_NAME_8, lpunk, FILTER_CLASSID, phr);
 }
 
 } // namespace
@@ -62,9 +106,55 @@ CUnknown * WINAPI CreateSoftcamInstance(LPUNKNOWN lpunk, HRESULT *phr)
 CFactoryTemplate g_Templates[] =
 {
     {
-        FILTER_NAME,
+        FILTER_NAME_1,
         &FILTER_CLASSID,
-        &CreateSoftcamInstance,
+        &CreateSoftcamInstance_1,
+        NULL,
+        nullptr
+    },
+        {
+        FILTER_NAME_2,
+        &FILTER_CLASSID,
+        &CreateSoftcamInstance_2,
+        NULL,
+        nullptr
+    },
+        {
+        FILTER_NAME_3,
+        &FILTER_CLASSID,
+        &CreateSoftcamInstance_3,
+        NULL,
+        nullptr
+    },
+        {
+        FILTER_NAME_4,
+        &FILTER_CLASSID,
+        &CreateSoftcamInstance_4,
+        NULL,
+        nullptr
+    },    {
+        FILTER_NAME_5,
+        &FILTER_CLASSID,
+        &CreateSoftcamInstance_5,
+        NULL,
+        nullptr
+    },    {
+        FILTER_NAME_6,
+        &FILTER_CLASSID,
+        &CreateSoftcamInstance_6,
+        NULL,
+        nullptr
+    },
+        {
+        FILTER_NAME_7,
+        &FILTER_CLASSID,
+        &CreateSoftcamInstance_7,
+        NULL,
+        nullptr
+    },    {
+        FILTER_NAME_8,
+        &FILTER_CLASSID,
+        &CreateSoftcamInstance_8,
         NULL,
         nullptr
     }
@@ -86,26 +176,51 @@ STDAPI DllRegisterServer()
     }
     do
     {
-        IFilterMapper2 *pFM2 = nullptr;
-        hr = CoCreateInstance(
-                CLSID_FilterMapper2, nullptr, CLSCTX_INPROC_SERVER,
-                IID_IFilterMapper2, (void**)&pFM2);
-        if (FAILED(hr))
         {
-            break;
+            IFilterMapper2 *pFM2 = nullptr;
+            hr = CoCreateInstance(
+                    CLSID_FilterMapper2, nullptr, CLSCTX_INPROC_SERVER,
+                    IID_IFilterMapper2, (void**)&pFM2);
+            if (FAILED(hr))
+            {
+                break;
+            }
+            pFM2->UnregisterFilter(
+                    &CLSID_VideoInputDeviceCategory,
+                    0,
+                    FILTER_CLASSID);
+            hr = pFM2->RegisterFilter(
+                    FILTER_CLASSID,
+                    FILTER_NAME_1,
+                    0,
+                    &CLSID_VideoInputDeviceCategory,
+                    FILTER_NAME_1,
+                    &s_reg_filter2);
+            pFM2->Release();
         }
-        pFM2->UnregisterFilter(
-                &CLSID_VideoInputDeviceCategory,
-                0,
-                FILTER_CLASSID);
-        hr = pFM2->RegisterFilter(
-                FILTER_CLASSID,
-                FILTER_NAME,
-                0,
-                &CLSID_VideoInputDeviceCategory,
-                FILTER_NAME,
-                &s_reg_filter2);
-        pFM2->Release();
+
+                {
+            IFilterMapper2 *pFM2 = nullptr;
+            hr = CoCreateInstance(
+                    CLSID_FilterMapper2, nullptr, CLSCTX_INPROC_SERVER,
+                    IID_IFilterMapper2, (void**)&pFM2);
+            if (FAILED(hr))
+            {
+                break;
+            }
+            pFM2->UnregisterFilter(
+                    &CLSID_VideoInputDeviceCategory,
+                    0,
+                    FILTER_CLASSID);
+            hr = pFM2->RegisterFilter(
+                    FILTER_CLASSID,
+                    FILTER_NAME_2,
+                    0,
+                    &CLSID_VideoInputDeviceCategory,
+                    FILTER_NAME_2,
+                    &s_reg_filter2);
+            pFM2->Release();
+        }
     } while (0);
     CoFreeUnusedLibraries();
     CoUninitialize();
@@ -126,19 +241,37 @@ STDAPI DllUnregisterServer()
     }
     do
     {
-        IFilterMapper2 *pFM2 = nullptr;
-        hr = CoCreateInstance(
-                CLSID_FilterMapper2, nullptr, CLSCTX_INPROC_SERVER,
-                IID_IFilterMapper2, (void**)&pFM2);
-        if (FAILED(hr))
         {
-            break;
+            IFilterMapper2 *pFM2 = nullptr;
+            hr = CoCreateInstance(
+                    CLSID_FilterMapper2, nullptr, CLSCTX_INPROC_SERVER,
+                    IID_IFilterMapper2, (void**)&pFM2);
+            if (FAILED(hr))
+            {
+                break;
+            }
+            hr = pFM2->UnregisterFilter(
+                    &CLSID_VideoInputDeviceCategory,
+                    FILTER_NAME_1,
+                    FILTER_CLASSID);
+            pFM2->Release();
         }
-        hr = pFM2->UnregisterFilter(
-                &CLSID_VideoInputDeviceCategory,
-                FILTER_NAME,
-                FILTER_CLASSID);
-        pFM2->Release();
+
+        {
+            IFilterMapper2 *pFM2 = nullptr;
+            hr = CoCreateInstance(
+                    CLSID_FilterMapper2, nullptr, CLSCTX_INPROC_SERVER,
+                    IID_IFilterMapper2, (void**)&pFM2);
+            if (FAILED(hr))
+            {
+                break;
+            }
+            hr = pFM2->UnregisterFilter(
+                    &CLSID_VideoInputDeviceCategory,
+                    FILTER_NAME_2,
+                    FILTER_CLASSID);
+            pFM2->Release();
+        }
     } while (0);
     CoFreeUnusedLibraries();
     CoUninitialize();
@@ -157,9 +290,9 @@ BOOL APIENTRY DllMain(HANDLE hModule, DWORD  dwReason, LPVOID lpReserved)
 // Softcam Sender API
 //
 
-extern "C" scCamera scCreateCamera(int width, int height, float framerate)
+extern "C" scCamera scCreateCamera(const char * name, int width, int height, float framerate)
 {
-    return softcam::sender::CreateCamera(width, height, framerate);
+    return softcam::sender::CreateCamera(name, width, height, framerate);
 }
 
 extern "C" void     scDeleteCamera(scCamera camera)
@@ -175,4 +308,8 @@ extern "C" void     scSendFrame(scCamera camera, const void* image_bits)
 extern "C" bool     scWaitForConnection(scCamera camera, float timeout)
 {
     return softcam::sender::WaitForConnection(camera, timeout);
+}
+
+extern "C" const char * scGetWebcamName(scCamera camera) {
+    return softcam::sender::GetWebcamName(camera);
 }

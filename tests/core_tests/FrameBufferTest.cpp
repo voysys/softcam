@@ -11,7 +11,7 @@ namespace sc = softcam;
 
 
 TEST(FrameBuffer, Basic1) {
-    auto fb = sc::FrameBuffer::create(320, 240, 60);
+    auto fb = sc::FrameBuffer::create("test", 320, 240, 60);
 
     EXPECT_TRUE( fb );
     EXPECT_NE( fb.handle(), nullptr );
@@ -23,8 +23,8 @@ TEST(FrameBuffer, Basic1) {
 }
 
 TEST(FrameBuffer, Basic2) {
-    auto sender = sc::FrameBuffer::create(320, 240, 60);
-    auto receiver = sc::FrameBuffer::open();
+    auto sender = sc::FrameBuffer::create("test", 320, 240, 60);
+    auto receiver = sc::FrameBuffer::open("test");
 
     EXPECT_TRUE( sender );
     EXPECT_TRUE( receiver );
@@ -44,7 +44,7 @@ TEST(FrameBuffer, Basic2) {
 }
 
 TEST(FrameBuffer, FramerateIsOptional) {
-    auto fb = sc::FrameBuffer::create(320, 240);
+    auto fb = sc::FrameBuffer::create("test", 320, 240);
 
     EXPECT_TRUE( fb );
     EXPECT_NE( fb.handle(), nullptr );
@@ -53,7 +53,7 @@ TEST(FrameBuffer, FramerateIsOptional) {
 
 TEST(FrameBuffer, InvalidArgs) {
     {
-        auto fb = sc::FrameBuffer::create(0, 240);
+        auto fb = sc::FrameBuffer::create("test", 0, 240);
         EXPECT_FALSE( fb );
         EXPECT_EQ( fb.handle(), nullptr );
         EXPECT_EQ( fb.width(), 0 );
@@ -61,23 +61,23 @@ TEST(FrameBuffer, InvalidArgs) {
         EXPECT_EQ( fb.framerate(), 0.0f );
         EXPECT_EQ( fb.active(), false );
     }{
-        auto fb = sc::FrameBuffer::create(320, 0);
+        auto fb = sc::FrameBuffer::create("test", 320, 0);
         EXPECT_FALSE( fb );
         EXPECT_EQ( fb.handle(), nullptr );
     }{
-        auto fb = sc::FrameBuffer::create(0, 0);
+        auto fb = sc::FrameBuffer::create("test", 0, 0);
         EXPECT_FALSE( fb );
         EXPECT_EQ( fb.handle(), nullptr );
     }{
-        auto fb = sc::FrameBuffer::create(-320, 240);
+        auto fb = sc::FrameBuffer::create("test", -320, 240);
         EXPECT_FALSE( fb );
         EXPECT_EQ( fb.handle(), nullptr );
     }{
-        auto fb = sc::FrameBuffer::create(320, -240);
+        auto fb = sc::FrameBuffer::create("test", 320, -240);
         EXPECT_FALSE( fb );
         EXPECT_EQ( fb.handle(), nullptr );
     }{
-        auto fb = sc::FrameBuffer::create(320, 240, -60);
+        auto fb = sc::FrameBuffer::create("test", 320, 240, -60);
         EXPECT_FALSE( fb );
         EXPECT_EQ( fb.handle(), nullptr );
     }
@@ -85,19 +85,19 @@ TEST(FrameBuffer, InvalidArgs) {
 
 TEST(FrameBuffer, TooLarge) {
     {
-        auto fb = sc::FrameBuffer::create(32000, 240);
+        auto fb = sc::FrameBuffer::create("test", 32000, 240);
         EXPECT_FALSE( fb );
         EXPECT_EQ( fb.handle(), nullptr );
     }{
-        auto fb = sc::FrameBuffer::create(320, 24000);
+        auto fb = sc::FrameBuffer::create("test", 320, 24000);
         EXPECT_FALSE( fb );
         EXPECT_EQ( fb.handle(), nullptr );
     }
 }
 
 TEST(FrameBuffer, OpenBeforeCreateFails) {
-    auto receiver = sc::FrameBuffer::open();
-    auto sender = sc::FrameBuffer::create(320, 240);
+    auto receiver = sc::FrameBuffer::open("test");
+    auto sender = sc::FrameBuffer::create("test", 320, 240);
 
     EXPECT_FALSE( receiver );
     EXPECT_TRUE( sender );
@@ -107,8 +107,8 @@ TEST(FrameBuffer, OpenBeforeCreateFails) {
 }
 
 TEST(FrameBuffer, MultipleCreateFails) {
-    auto fb1 = sc::FrameBuffer::create(320, 240, 60);
-    auto fb2 = sc::FrameBuffer::create(320, 240, 60);
+    auto fb1 = sc::FrameBuffer::create("test", 320, 240, 60);
+    auto fb2 = sc::FrameBuffer::create("test", 320, 240, 60);
 
     EXPECT_TRUE( fb1 );
     EXPECT_FALSE( fb2 );
@@ -117,9 +117,9 @@ TEST(FrameBuffer, MultipleCreateFails) {
 }
 
 TEST(FrameBuffer, MultipleOpenSucceeds) {
-    auto sender = sc::FrameBuffer::create(320, 240, 60);
-    auto receiver1 = sc::FrameBuffer::open();
-    auto receiver2 = sc::FrameBuffer::open();
+    auto sender = sc::FrameBuffer::create("test", 320, 240, 60);
+    auto receiver1 = sc::FrameBuffer::open("test");
+    auto receiver2 = sc::FrameBuffer::open("test");
 
     EXPECT_TRUE( sender );
     EXPECT_TRUE( receiver1 );
@@ -136,28 +136,28 @@ TEST(FrameBuffer, MultipleOpenSucceeds) {
 TEST(FrameBuffer, CanCopyAssign)
 {
     {
-        auto fb1 = sc::FrameBuffer::create(320, 240, 60);
+        auto fb1 = sc::FrameBuffer::create("test", 320, 240, 60);
         EXPECT_NO_THROW({
             auto fb2 = fb1;
         });
     }
     {
-        auto fb1 = sc::FrameBuffer::create(320, 240, 60);
+        auto fb1 = sc::FrameBuffer::create("test", 320, 240, 60);
         EXPECT_NO_THROW({
-            fb1 = sc::FrameBuffer::create(320, 240, 60);
+            fb1 = sc::FrameBuffer::create("test", 320, 240, 60);
         });
     }
     {
-        auto fb1 = sc::FrameBuffer::create(320, 240, 60);
-        auto fb2 = sc::FrameBuffer::open();
+        auto fb1 = sc::FrameBuffer::create("test", 320, 240, 60);
+        auto fb2 = sc::FrameBuffer::open("test");
         EXPECT_NO_THROW({
-            fb2 = sc::FrameBuffer::open();
+            fb2 = sc::FrameBuffer::open("test");
         });
     }
 }
 
 TEST(FrameBuffer, WriteIncreasesFrameCounter) {
-    auto fb = sc::FrameBuffer::create(320, 240, 60);
+    auto fb = sc::FrameBuffer::create("test", 320, 240, 60);
     EXPECT_EQ( fb.frameCounter(), 0 );
 
     std::vector<uint8_t> image(320 * 240 * 3, 255);
@@ -173,7 +173,7 @@ TEST(FrameBuffer, WriteAndRead) {
     const auto TestPatternG = [](int x, int y) { return (uint8_t)((x - y) & 0xff); };
     const auto TestPatternB = [](int x, int y) { return (uint8_t)((x * y) & 0xff); };
 
-    auto fb = sc::FrameBuffer::create(320, 240, 60);
+    auto fb = sc::FrameBuffer::create("test", 320, 240, 60);
 
     std::vector<uint8_t> src(320 * 240 * 3, 111);
     std::vector<uint8_t> dest(320 * 240 * 3, 222);
@@ -214,8 +214,8 @@ TEST(FrameBuffer, WriteAndRead) {
 }
 
 TEST(FrameBuffer, DeactivateTurnsActiveFlagOff) {
-    auto sender = sc::FrameBuffer::create(320, 240, 60);
-    auto receiver = sc::FrameBuffer::open();
+    auto sender = sc::FrameBuffer::create("test", 320, 240, 60);
+    auto receiver = sc::FrameBuffer::open("test");
     sender.deactivate();
 
     EXPECT_TRUE( sender );
@@ -231,7 +231,7 @@ TEST(FrameBuffer, DeactivateTurnsActiveFlagOff) {
 
 TEST(FrameBuffer, WaitForNewFrameTimesOut) {
     const float TIMEOUT_TIME = 0.3f;
-    auto fb = sc::FrameBuffer::create(320, 240, 60);
+    auto fb = sc::FrameBuffer::create("test", 320, 240, 60);
 
     std::atomic<int> pos = 0;
     std::thread th([&]{
@@ -249,7 +249,7 @@ TEST(FrameBuffer, WaitForNewFrameTimesOut) {
 
 TEST(FrameBuffer, WaitForNewFrameStopsAfterNewFrameArrived) {
     const float TIMEOUT_TIME = 2.0f;
-    auto fb = sc::FrameBuffer::create(320, 240, 60);
+    auto fb = sc::FrameBuffer::create("test", 320, 240, 60);
 
     auto frame_count = fb.frameCounter();
     std::atomic<int> pos = 0;
@@ -271,7 +271,7 @@ TEST(FrameBuffer, WaitForNewFrameStopsAfterNewFrameArrived) {
 
 TEST(FrameBuffer, WaitForNewFrameStopsWhenDeactivated) {
     const float TIMEOUT_TIME = 2.0f;
-    auto fb = sc::FrameBuffer::create(320, 240, 60);
+    auto fb = sc::FrameBuffer::create("test", 320, 240, 60);
 
     auto frame_count = fb.frameCounter();
     std::atomic<int> pos = 0;
@@ -293,11 +293,11 @@ TEST(FrameBuffer, WaitForNewFrameStopsWhenDeactivated) {
 
 TEST(FrameBuffer, WaitForNewFrameStopsWhenWatchdogTimeouts) {
     const float TEST_TIMEOUT = sc::FrameBuffer::WATCHDOG_TIMEOUT + 1.0f;
-    auto fb = sc::FrameBuffer::create(320, 240, 60);
+    auto fb = sc::FrameBuffer::create("test", 320, 240, 60);
 
     std::atomic<int> pos = 0;
     std::thread th([&]{
-        auto receiver = sc::FrameBuffer::open();
+        auto receiver = sc::FrameBuffer::open("test");
         auto frame_count = receiver.frameCounter();
         bool ret = receiver.waitForNewFrame(frame_count, TEST_TIMEOUT);
         EXPECT_EQ( ret, false );
@@ -317,7 +317,7 @@ TEST(FrameBuffer, WaitForNewFrameStopsWhenWatchdogTimeouts) {
 }
 
 TEST(FrameBuffer, ReleaseInvalidatesItself) {
-    auto fb = sc::FrameBuffer::create(320, 240, 60);
+    auto fb = sc::FrameBuffer::create("test", 320, 240, 60);
     fb.release();
 
     EXPECT_FALSE( fb );
@@ -331,8 +331,8 @@ TEST(FrameBuffer, ReleaseInvalidatesItself) {
 }
 
 TEST(FrameBuffer, ReleaseOnReceiverDisconnects) {
-    auto sender = sc::FrameBuffer::create(320, 240, 60);
-    auto receiver = sc::FrameBuffer::open();
+    auto sender = sc::FrameBuffer::create("test", 320, 240, 60);
+    auto receiver = sc::FrameBuffer::open("test");
     receiver.release();
 
     EXPECT_FALSE( receiver );
